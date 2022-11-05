@@ -1,11 +1,11 @@
 import telebot
 
+from menu_models.bot_order_menu import OrderMenu
 from menu_models.bot_delete_menu import DeleteMenu
 from menu_models.bot_login_menu import LoginMenu
 from menu_models import MainMenu, StockManager, StockEditor
 from enums_schemas import MenuState, Status
-from product_item import Stock, UserInfo
-
+from product_item import Stock
 
 class MainBot:
 
@@ -16,7 +16,8 @@ class MainBot:
         MenuState.login_menu: LoginMenu(stock),
         MenuState.delete_menu: DeleteMenu(stock),
         MenuState.stock_manager: StockManager(stock),
-        MenuState.stock_editor: StockEditor(stock)
+        MenuState.stock_editor: StockEditor(stock),
+        MenuState.order_menu:OrderMenu(stock)
         }
         self.menu_state = MenuState.main
         self.menu = self.MENUS[self.menu_state]
@@ -29,8 +30,6 @@ class MainBot:
         self.menu = self.MENUS[self.menu_state]
 
     def main_handler(self, message):
-        a = UserInfo(message.from_user.id,message.from_user.username)
-        print(a)
         print(f"[LOG] {message}")
         action = str(message.json["text"])
         state = self.menu.handle(self.bot, action, message.json['chat']['id'])
@@ -50,9 +49,13 @@ def main():
     stock = Stock("./data_json.json")
     stock.load()
     app = MainBot(bot,stock)
-
     app.run()
 
+
+
+
+
+    bot.polling()
 
 
 if __name__ == '__main__':

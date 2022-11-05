@@ -15,5 +15,6 @@ class MenuState:
     stock_editor = "s_e"
     login_menu = "l_m"
     delete_menu = "d_m"
+    order_menu = "o_m"
 
 
