@@ -1,9 +1,7 @@
-
 from menu_models import MenuProtocol
 from enums_schemas import Status, MenuState
 from menu_models.constant_messages import *
 from product_item import Stock
-
 
 
 class OrderStatus:
@@ -20,11 +18,11 @@ class OrderStates:
 
 
 class OrderMenu(MenuProtocol):
-    def __init__(self ,stock):
+    def __init__(self, stock):
         super(OrderMenu, self).__init__(stock)
         self.msg_stage: str = order_menu_stage_msg
         self.state = None
-        self.queue = [OrderStates.address_state ,OrderStates.phone_state,
+        self.queue = [OrderStates.address_state, OrderStates.phone_state,
                       OrderStates.amount_state,
                       OrderStates.product_state]
         self.cart = []
@@ -35,10 +33,9 @@ class OrderMenu(MenuProtocol):
     def show(self):
         return self.msg_stage + f"\n {self.stock.get_stock()}" + "הכנס שם מוצר:"
 
-
     def handle(self, bot,
 
-    message,sender) -> str:
+               message, sender) -> str:
         self.state = self.queue.pop()
         print(f"[LOG] state -  {self.state}")
         print(f"[LOG] data -  {message}")
@@ -50,14 +47,14 @@ class OrderMenu(MenuProtocol):
                 self.reply_msg = "הכנס כמות"
 
             else:
-                self.reply_msg =f"אין מוצר במלאי  הכנס מוצר תקין:"
+                self.reply_msg = f"אין מוצר במלאי  הכנס מוצר תקין:"
                 self.queue.append(self.state)
 
         elif self.state == OrderStates.amount_state:
             if int(self.cart[0].ammount) < int(message):
                 self.reply_msg = "הכנס כמות שוב:"
                 self.queue.append(self.state)
-                bot.send_message(sender,"אין מספיק במלאי " )
+                bot.send_message(sender, "אין מספיק במלאי ")
             else:
                 self.cart[0] = (self.cart[0], message)
                 self.reply_msg = f"בחרת להוסיף  {message}"
@@ -68,4 +65,4 @@ class OrderMenu(MenuProtocol):
         elif self.state == OrderStates.address_state:
             return MenuState.main
         bot.send_message(sender, self.reply_msg)
-        return  Status.wait
+        return Status.wait

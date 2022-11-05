@@ -10,14 +10,14 @@ class Product():
 
     def __str__(self):
         return f"מוצר: {self.name} " \
-               f"\n"\
+               f"\n" \
                f"    כמות: {self.ammount} \n"
 
     def save_ready(self):
         return {
-                "name": self.name,
-                "ammount": self.ammount
-                }
+            "name": self.name,
+            "ammount": self.ammount
+        }
 
 
 class Stock():
@@ -26,11 +26,9 @@ class Stock():
         self.stock = None
         self.products = None
 
-
     def load(self):
         self.stock = json_read(self.out_put_file)
         self.products = [Product(**p) for p in self.stock["Stock"]]
-
 
     def get_product(self, name):
         for item in self.products:
@@ -40,21 +38,21 @@ class Stock():
 
     def get_stock(self):
         tmp_stock = ""
-        for index,value in enumerate(self.products):
-            tmp_stock += f"{index+1}) {value.name} \n"
+        for index, value in enumerate(self.products):
+            tmp_stock += f"{index + 1}) {value.name} \n"
         return tmp_stock
 
     def get_stock_admin(self):
         tmp_stock = "מצב מלאי :\n"
-        for index,value in enumerate(self.products):
-            tmp_stock += f"{index+1}) {value}"
+        for index, value in enumerate(self.products):
+            tmp_stock += f"{index + 1}) {value}"
         tmp_stock += f"."
         return tmp_stock
 
-    def add_product(self,pdt):
+    def add_product(self, pdt):
         self.products.append(pdt)
 
-    def remove_product(self,name) -> bool:
+    def remove_product(self, name) -> bool:
         item = self.get_product(name)
         if item:
             self.products.remove(item)
@@ -62,8 +60,6 @@ class Stock():
             return True
         else:
             return False
-
-
 
     def commit(self):
         self.stock["Stock"] = [p.save_ready() for p in self.products]
