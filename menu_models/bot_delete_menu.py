@@ -1,32 +1,31 @@
-from menu_models import Base_Menu
+from bot_telegram.menu_models import MenuProtocol
+from bot_telegram.enums_schemas import MenuState, Status
+from .constant_messages import *
 
 
-class Delete_Menu(Base_Menu):
+class DeleteMenu(MenuProtocol):
+
     def __init__(self):
         super().__init__()
+        self.msg_stage = delete_menu_stage_msg
         self.msg = "הסתיים תהליך  המחיקה ."
 
-    def heandler(self, message):
-        action = message
-        if self.state == "waiting_delete":
-            pass
-        elif action == "#":
-            self.state = "m"
-        elif action == "1":
-            self.state = "yes"
-        elif action == "2":
-            self.state = "no"
+    def handle(self, bot, message, sender):
+        if message == Status.back_to_main_menu:
+            return MenuState.main
+
+        bot.send_message(sender, self.delete_product(message))
+        bot.send_message(sender, self.msg)
+        self.in_process = False
+        return MenuState.stock_manager
 
     def show(self):
-        self.state = "waiting_delete"
-        return ("ברוכים הבאים למחיקת מוצר מהמלאי \n"
-                "כדי למחוק מוצר  מהמלאי יש לשלוח את שם המוצר .\n"
-                "לחזרה לתפריט הראשי שלח # .\n")
+        return self.msg_stage
 
-    def delete_product(self, action):
-        res = self.stock.remove_product(action)
-        self.state = "deleted"
+    def delete_product(self, name):
+
+        res = self.stock.remove_product(name)
         if res:
-            return f"נמחק בהצלחה בהצלחה{action}"
+            return f"נמחק בהצלחה בהצלחה{name}"
         else:
-            return f"אין מוצר כזה במלאי - נא לבדוק את מה ששלחת{action}"
+            return f"אין מוצר כזה במלאי - נא לבדוק את מה ששלחת{name}"

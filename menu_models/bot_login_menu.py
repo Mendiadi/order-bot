@@ -1,18 +1,23 @@
-from menu_models import Base_Menu
+from bot_telegram.menu_models import MenuProtocol
+from .constant_messages import *
+from bot_telegram.enums_schemas import Status, MenuState
 
 
-class Login_Menu(Base_Menu):
+class LoginMenu(MenuProtocol):
 
-    def heandler(self, message):
-        action = message
-        if self.state == "wating_for_password":
-            if action == "pass":
-                self.state = "pass_validation"
-            else:
-                self.state = "wrong_password"
+    def __init__(self):
+        super(LoginMenu, self).__init__()
+        self.msg_stage = login_stage_msg
+        self.secret_key = "pass"
+
+    def handle(self, bot, message, sender):
+        if message == self.secret_key:
+            bot.send_message(sender, text="התחברות בוצעה בהצלחה")
+            return MenuState.stock_manager
+        elif message == Status.back_to_main_menu:
+            return MenuState.main
+        else:
+            bot.send_message(sender, text="סיסמא שגויה , נסה שוב.")
 
     def show(self):
-        self.state = "wating_for_password"
-        return ("ברוכים הבאים לתפריט התחברות למסך מנהל \n"
-                "אנא הקלד סיסמא \n"
-                "לחזרה לתפריט הראשי שלח: # .\n")
+        return self.msg_stage

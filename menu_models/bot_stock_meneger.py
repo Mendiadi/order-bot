@@ -1,30 +1,27 @@
-from menu_models import Base_Menu
+from bot_telegram.menu_models import MenuProtocol
+from .constant_messages import *
+from bot_telegram.enums_schemas import MenuState, Status
 
 
-class Stock_meneger(Base_Menu):
+class StockManager(MenuProtocol):
+    actions = {
+        "1": MenuState.stock_editor,
+        "2": MenuState.delete_menu,
+        "3": Status.stock,
+        "#": MenuState.main
+
+    }
+
+    def show(self) -> str:
+        return self.msg_stage
 
     def __init__(self):
         super().__init__()
+        self.msg_stage = stock_manager_stage_msg
         self.temp_product = None
 
-    def heandler(self, message):
-        action = message
-        if action == "1":
-            self.state = "s_e"
-
-        elif action == "2":
-            self.state = "d_m"
-
-        elif action == "3":
-            self.state = "stock_m"
-
-        elif action == "#":
-            self.state = "m"
-
-    def show(self):
-        return ("ברוכים הבאים לתפריט מנהל \n"
-                "1. לעדכון / הוספת של מוצר למלאי .\n"
-                "2. למחיקת מוצר מהמלאי .\n"
-                "3. לקבלת מצב מלאי .\n"
-                "אנא בחר מספר .\n"
-                "לחזרה לתפריט הראשי שלח # .\n")
+    def handle(self, bot, message, sender):
+        rep = super(StockManager, self).handle(bot, message, sender)
+        if rep == Status.stock:
+            bot.send_message(sender, self.stock.get_stock_admin())
+        return rep
