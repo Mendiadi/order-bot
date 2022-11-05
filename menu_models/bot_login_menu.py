@@ -5,8 +5,8 @@ from bot_telegram.enums_schemas import Status, MenuState
 
 class LoginMenu(MenuProtocol):
 
-    def __init__(self):
-        super(LoginMenu, self).__init__()
+    def __init__(self,stock):
+        super(LoginMenu, self).__init__(stock)
         self.msg_stage = login_stage_msg
         self.secret_key = "pass"
 

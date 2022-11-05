@@ -5,8 +5,8 @@ from .constant_messages import *
 
 class DeleteMenu(MenuProtocol):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,stock):
+        super().__init__(stock)
         self.msg_stage = delete_menu_stage_msg
         self.msg = "הסתיים תהליך  המחיקה ."
 

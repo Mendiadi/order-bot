@@ -12,8 +12,8 @@ class MainMenu(MenuProtocol):
         "#": MenuState.main
     }
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,stock):
+        super().__init__(stock)
         self.msg_stage = main_stage_msg
 
     def show(self) -> str:

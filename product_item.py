@@ -22,8 +22,15 @@ class Product():
 
 class Stock():
     def __init__(self, path: str):
-        self.stock = json_read(path)
+        self.out_put_file = path
+        self.stock = None
+        self.products = None
+
+
+    def load(self):
+        self.stock = json_read(self.out_put_file)
         self.products = [Product(**p) for p in self.stock["Stock"]]
+
 
     def get_product(self, name):
         for item in self.products:
@@ -44,6 +51,9 @@ class Stock():
         tmp_stock += f"."
         return tmp_stock
 
+    def add_product(self,pdt):
+        self.products.append(pdt)
+
     def remove_product(self,name) -> bool:
         item = self.get_product(name)
         if item:
@@ -59,3 +69,4 @@ class Stock():
         self.stock["Stock"] = [p.save_ready() for p in self.products]
         write_to_json(self.stock, 'data_json.json', len(self.stock))
         print("[DB] commited.")
+        print(f"[DB] {self.products}")
