@@ -1,6 +1,6 @@
-from bot_telegram.menu_models import MenuProtocol
+from menu_models import MenuProtocol
 from .constant_messages import *
-from bot_telegram.enums_schemas import MenuState, Status
+from enums_schemas import MenuState, Status
 
 
 class StockManager(MenuProtocol):

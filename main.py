@@ -3,8 +3,8 @@ import telebot
 from menu_models.bot_delete_menu import DeleteMenu
 from menu_models.bot_login_menu import LoginMenu
 from menu_models import MainMenu, StockManager, StockEditor
-from bot_telegram.enums_schemas import MenuState, Status
-from bot_telegram.product_item import Stock
+from enums_schemas import MenuState, Status
+from product_item import Stock
 
 class MainBot:
 

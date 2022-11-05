@@ -1,5 +1,5 @@
-from bot_telegram.enums_schemas import Status
-from bot_telegram.product_item import Stock
+from enums_schemas import Status
+from product_item import Stock
 
 
 class MenuProtocol:
