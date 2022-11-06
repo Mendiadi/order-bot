@@ -5,7 +5,7 @@ import asyncio
 from telegram.ext import *
 from telegram import *
 
-
+from menu_models.bot_active_talk import OrdersMeneger
 from menu_models.bot_order_menu import OrderMenu
 from menu_models.bot_delete_menu import DeleteMenu
 from menu_models.bot_login_menu import LoginMenu
@@ -28,7 +28,7 @@ class MainBot:
         }
         self.menu_state = MenuState.main
         self.menu = self.MENUS[self.menu_state]
-
+        self.order_meneger = OrdersMeneger("/talk_json.json")
 
     def greet(self,update,context):...
 
@@ -47,11 +47,12 @@ class MainBot:
         self.updater(state)
         if state != Status.wait:
             update.message.reply_text( self.menu.show())
-        print(threading.activeCount())
+        print(threading.active_count())
 
 
 clients = {}
 stock = Stock("./data_json.json")
+
 def client(update,context):
     uid = update.message.from_user.id
     if uid not in clients:
@@ -72,7 +73,6 @@ def main():
 
     updater = Updater(key, use_context=True)
     a:Dispatcher = updater.dispatcher
-
 
     stock.load()
     a.add_handler(MessageHandler(Filters.text,client))

@@ -1,5 +1,6 @@
 from menu_models import MenuProtocol
 from enums_schemas import Status, MenuState
+from menu_models.bot_active_talk import OrderObj
 from menu_models.constant_messages import *
 from product_item import Stock
 
@@ -27,15 +28,14 @@ class OrderMenu(MenuProtocol):
                       OrderStates.product_state]
         self.cart = []
         self.reply_msg = ""
+        self.order = OrderObj([],"","",None)
         print(f"[LOG] state list -  {self.queue}")
         # todo constant message for each msg in state!!!!
 
     def show(self):
         return self.msg_stage + f"\n {self.stock.get_stock()}" + "הכנס שם מוצר:"
 
-    def handle(self, bot,
-
-               message, sender) -> str:
+    def handle(self, bot,message, sender) -> str:
         if self.queue:
             self.state = self.queue.pop()
         print(f"[LOG] state -  {self.state}")
@@ -45,6 +45,7 @@ class OrderMenu(MenuProtocol):
             if product:
                 self.reply_msg = f" נוסף לעגלה{message}"
                 self.cart.append(product)
+                self.order.cart = self.cart
                 self.reply_msg = "הכנס כמות"
 
             else:
@@ -57,13 +58,18 @@ class OrderMenu(MenuProtocol):
                 self.queue.append(self.state)
                 bot.reply_text("אין מספיק במלאי ")
             else:
-                self.cart[0] = (self.cart[0], message)
+                self.order.cart = {"p":self.cart[0].name,"amount": message}
                 self.reply_msg = f"בחרת להוסיף  {message}"
                 self.reply_msg = "הכנס פאלפון:"
         elif self.state == OrderStates.phone_state:
+
             self.reply_msg = "הכנס כתובת:"
             # todo if phone is valid -> keep going
+            self.order.phone = message
         elif self.state == OrderStates.address_state:
+            self.order.address = message
+            print(self.order)
+
             return MenuState.main
         bot.reply_text(self.reply_msg)
         return Status.wait
