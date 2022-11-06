@@ -36,7 +36,8 @@ class OrderMenu(MenuProtocol):
     def handle(self, bot,
 
                message, sender) -> str:
-        self.state = self.queue.pop()
+        if self.queue:
+            self.state = self.queue.pop()
         print(f"[LOG] state -  {self.state}")
         print(f"[LOG] data -  {message}")
         if self.state == OrderStates.product_state:
@@ -54,7 +55,7 @@ class OrderMenu(MenuProtocol):
             if int(self.cart[0].ammount) < int(message):
                 self.reply_msg = "הכנס כמות שוב:"
                 self.queue.append(self.state)
-                bot.send_message(sender, "אין מספיק במלאי ")
+                bot.reply_text("אין מספיק במלאי ")
             else:
                 self.cart[0] = (self.cart[0], message)
                 self.reply_msg = f"בחרת להוסיף  {message}"
@@ -64,5 +65,5 @@ class OrderMenu(MenuProtocol):
             # todo if phone is valid -> keep going
         elif self.state == OrderStates.address_state:
             return MenuState.main
-        bot.send_message(sender, self.reply_msg)
+        bot.reply_text(self.reply_msg)
         return Status.wait

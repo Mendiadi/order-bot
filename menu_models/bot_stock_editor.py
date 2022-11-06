@@ -20,20 +20,20 @@ class StockEditor(MenuProtocol):
 
     def handle(self, bot, message, sender):
         if self.in_state == StockEditorStates.amount:
-            bot.send_message(sender, self.update_stock(message))
+            bot.reply_text(self.update_stock(message))
             self.in_state = StockEditorStates.name
-            bot.send_message(sender, self.msg)
+            bot.reply_text(self.msg)
             return MenuState.stock_manager
         else:
             if message == Status.back_to_main_menu:
                 return MenuState.main
 
             if self.stock.get_product(message):
-                bot.send_message(sender, f"לכמה לעדכן את המלאי ל {message}?")
+                bot.reply_text(f"לכמה לעדכן את המלאי ל {message}?")
                 self.temp_product = message
             else:
                 self.temp_product = message
-                bot.send_message(sender, f"כמה לעדכן את המלאי ל {message}?")
+                bot.reply_text(f"כמה לעדכן את המלאי ל {message}?")
             self.in_state = StockEditorStates.amount
             return Status.wait
 

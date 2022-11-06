@@ -14,8 +14,8 @@ class DeleteMenu(MenuProtocol):
         if message == Status.back_to_main_menu:
             return MenuState.main
 
-        bot.send_message(sender, self.delete_product(message))
-        bot.send_message(sender, self.msg)
+        bot.reply_text(self.delete_product(message))
+        bot.reply_text(self.msg)
         self.in_process = False
         return MenuState.stock_manager
 

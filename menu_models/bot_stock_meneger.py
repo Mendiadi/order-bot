@@ -24,5 +24,5 @@ class StockManager(MenuProtocol):
         rep = super(StockManager, self).handle(bot, message, sender)
         if rep == Status.stock:
             print(f"stock = {self.stock.get_stock_admin()}")
-            bot.send_message(sender, self.stock.get_stock_admin())
+            bot.reply_text(self.stock.get_stock_admin())
         return rep

@@ -22,10 +22,10 @@ class MainMenu(MenuProtocol):
     def handle(self, bot, message, sender):
         rep = super(MainMenu, self).handle(bot, message, sender)
         if rep == Status.error:
-            bot.send_message(sender, ERROR_MSG)
+            bot.reply_text( ERROR_MSG)
             return rep
         elif rep == Status.stock:
-            bot.send_message(sender, self.stock.get_stock())
+            bot.reply_text(self.stock.get_stock())
 
         else:
             return rep
