@@ -8,7 +8,7 @@ class StockManager(MenuProtocol):
         "1": MenuState.stock_editor,
         "2": MenuState.delete_menu,
         "3": Status.stock,
-        "#": MenuState.main
+        Status.back_to_main_menu: MenuState.main
 
     }
 
@@ -20,8 +20,8 @@ class StockManager(MenuProtocol):
         self.msg_stage = stock_manager_stage_msg
         self.temp_product = None
 
-    def handle(self, bot, message, sender):
-        rep = super(StockManager, self).handle(bot, message, sender)
+    def handle(self, bot, message, sender,context):
+        rep = super(StockManager, self).handle(bot, message, sender,context)
         if rep == Status.stock:
             print(f"stock = {self.stock.get_stock_admin()}")
             bot.reply_text(self.stock.get_stock_admin())

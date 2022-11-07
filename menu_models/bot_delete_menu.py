@@ -10,7 +10,7 @@ class DeleteMenu(MenuProtocol):
         self.msg_stage = delete_menu_stage_msg
         self.msg = "הסתיים תהליך  המחיקה ."
 
-    def handle(self, bot, message, sender):
+    def handle(self, bot, message, sender,context):
         if message == Status.back_to_main_menu:
             return MenuState.main
 

@@ -18,7 +18,7 @@ class StockEditor(MenuProtocol):
         self.msg = "הסתיים תהליך  עדכון / הוספה  של מוצר ."
         self.in_state = StockEditorStates.name
 
-    def handle(self, bot, message, sender):
+    def handle(self, bot, message, sender,context):
         if self.in_state == StockEditorStates.amount:
             bot.reply_text(self.update_stock(message))
             self.in_state = StockEditorStates.name

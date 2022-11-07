@@ -10,7 +10,7 @@ class MenuProtocol:
         self.msg_stage: str = ""
 
 
-    def handle(self, bot, message,sender) -> str:
+    def handle(self, bot, message,sender,context) -> str:
 
         if message not in self.actions:
             return Status.error

@@ -19,13 +19,16 @@ class MainMenu(MenuProtocol):
     def show(self) -> str:
         return self.msg_stage
 
-    def handle(self, bot, message, sender):
-        rep = super(MainMenu, self).handle(bot, message, sender)
+    def handle(self, bot, message, sender,context):
+        rep = super(MainMenu, self).handle(bot, message, sender,context)
         if rep == Status.error:
             bot.reply_text( ERROR_MSG)
             return rep
         elif rep == Status.stock:
-            bot.reply_text(self.stock.get_stock())
+            stock = self.stock.get_stock()
+            if stock:
+                bot.reply_text(stock)
+
 
         else:
             return rep

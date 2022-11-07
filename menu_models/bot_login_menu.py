@@ -10,7 +10,7 @@ class LoginMenu(MenuProtocol):
         self.msg_stage = login_stage_msg
         self.secret_key = "pass"
 
-    def handle(self, bot, message, sender):
+    def handle(self, bot, message, sender,context):
         if message == self.secret_key:
             bot.reply_text("התחברות בוצעה בהצלחה")
             return MenuState.stock_manager

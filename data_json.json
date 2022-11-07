@@ -1,20 +1,3 @@
 {
- "Stock": [
-  {
-   "name": "\u05de\u05e9\u05d4",
-   "ammount": "12"
-  },
-  {
-   "name": "\u05d3\u05d5\u05e8",
-   "ammount": "10"
-  },
-  {
-   "name": "\u05e9\u05d9",
-   "ammount": "10"
-  },
-  {
-   "name": "\u05db",
-   "ammount": "1"
-  }
- ]
+ "Stock": []
 }
