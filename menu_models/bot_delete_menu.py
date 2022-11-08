@@ -12,7 +12,7 @@ class DeleteMenu(MenuProtocol):
 
     def handle(self, bot, message, sender,context):
         if message == Status.back_to_main_menu:
-            return MenuState.main
+            return MenuState.stock_manager
 
         bot.reply_text(self.delete_product(message))
         bot.reply_text(self.msg)

@@ -19,14 +19,15 @@ class StockEditor(MenuProtocol):
         self.in_state = StockEditorStates.name
 
     def handle(self, bot, message, sender,context):
+        if message == Status.back_to_main_menu:
+            return MenuState.stock_manager
         if self.in_state == StockEditorStates.amount:
             bot.reply_text(self.update_stock(message))
             self.in_state = StockEditorStates.name
             bot.reply_text(self.msg)
             return MenuState.stock_manager
         else:
-            if message == Status.back_to_main_menu:
-                return MenuState.main
+
 
             if self.stock.get_product(message):
                 bot.reply_text(f"לכמה לעדכן את המלאי ל {message}?")
@@ -43,7 +44,9 @@ class StockEditor(MenuProtocol):
     def update_stock(self, amount):
         product = self.stock.get_product(self.temp_product)
         if product:
-            product.ammount = amount
+            if amount.isdigit():
+                product.ammount = amount
+
         else:
             self.stock.add_product(Product(self.temp_product, amount))
         self.stock.commit()

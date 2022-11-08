@@ -6,6 +6,7 @@ from telegram import *
 from menu_models.bot_order_menu import OrderMenu
 from menu_models.bot_delete_menu import DeleteMenu
 from menu_models.bot_login_menu import LoginMenu
+from menu_models.bot_order_manager_menu import AdminOrderManager
 from menu_models import MainMenu, StockManager, StockEditor
 from enums_schemas import MenuState, Status
 from product_item import Stock
@@ -21,7 +22,8 @@ class MainBot:
             MenuState.delete_menu: DeleteMenu(stock),
             MenuState.stock_manager: StockManager(stock),
             MenuState.stock_editor: StockEditor(stock),
-            MenuState.order_menu: OrderMenu(stock)
+            MenuState.order_menu: OrderMenu(stock),
+            MenuState.order_manage:AdminOrderManager(stock)
         }
         self.menu_state = MenuState.main
         self.menu = self.MENUS[self.menu_state]

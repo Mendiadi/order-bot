@@ -8,6 +8,7 @@ class StockManager(MenuProtocol):
         "1": MenuState.stock_editor,
         "2": MenuState.delete_menu,
         "3": Status.stock,
+        "4":MenuState.order_manage,
         Status.back_to_main_menu: MenuState.main
 
     }
@@ -25,4 +26,5 @@ class StockManager(MenuProtocol):
         if rep == Status.stock:
             print(f"stock = {self.stock.get_stock_admin()}")
             bot.reply_text(self.stock.get_stock_admin())
+
         return rep
