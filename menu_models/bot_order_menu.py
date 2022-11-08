@@ -38,9 +38,12 @@ class OrderMenu(MenuProtocol):
         self.cart = []
 
     def show(self):
+
         return self.msg_stage + f"\n {self.stock.get_stock()}" + "הכנס שם מוצר:"
 
+
     def handle(self, bot, message, sender,context) -> str:
+
         if self.stack:
             self.state = self.stack.pop()
         print(f"[LOG] state -  {self.state}")

@@ -1,4 +1,4 @@
-import json
+import os
 from dataclasses import dataclass
 from json_func import json_read, write_to_json
 
@@ -20,15 +20,19 @@ class Product():
         }
 
 
-class Stock():
+class Stock:
     def __init__(self, path: str):
         self.out_put_file = path
         self.stock = None
         self.products = None
 
     def load(self):
-        self.stock = json_read(self.out_put_file)
-        self.products = [Product(**p) for p in self.stock["Stock"]]
+        if self.out_put_file in os.listdir():
+            self.stock = json_read(self.out_put_file)
+            self.products = [Product(**p) for p in self.stock["Stock"]]
+        else:
+            write_to_json({"Stock":[]},self.out_put_file,1)
+            self.stock = json_read(self.out_put_file)
 
     def get_product(self, name):
         for item in self.products:
@@ -37,10 +41,11 @@ class Stock():
         return None
 
     def get_stock(self):
-        tmp_stock = ""
-        for index, value in enumerate(self.products):
-            tmp_stock += f"{index + 1}) {value.name} \n"
-        return tmp_stock
+        if self.products:
+            tmp_stock = ""
+            for index, value in enumerate(self.products):
+                tmp_stock += f"{index + 1}) {value.name} \n"
+            return tmp_stock
 
     def get_stock_admin(self):
         tmp_stock = "מצב מלאי :\n"
@@ -63,6 +68,14 @@ class Stock():
 
     def commit(self):
         self.stock["Stock"] = [p.save_ready() for p in self.products]
-        write_to_json(self.stock, 'data_json.json', len(self.stock))
+        write_to_json(self.stock, self.out_put_file, len(self.stock))
         print("[DB] commited.")
         print(f"[DB] {self.products}")
+
+
+if __name__ == '__main__':
+    a = Stock("data.json")
+    a.load()
+    a.products = [Product("shay",10),Product("adi",20)]
+    a.commit()
+    print(a.get_stock())
