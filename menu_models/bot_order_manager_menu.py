@@ -36,10 +36,15 @@ class AdminOrderManager(MenuProtocol):
         }
         self.reply_msg = "חושב"
         self.order_manager = get_order_system()
+        self.temp_status = None
         self.on_exit()
 
     def on_view_orders(self, message, bot):
-        self.reply_msg = f"{self.order_manager.orders.items()}"
+        orders = self.order_manager.orders.items()
+        if not orders:
+            self.reply_msg = f"אין הזמנות ממתינות"
+        else:
+            self.reply_msg = f"{orders}"
         self.on_exit()
         return MenuState.order_manage
 
@@ -63,16 +68,17 @@ class AdminOrderManager(MenuProtocol):
         self.state = None
         self.order_temp = None
         self.order_number_temp = None
+        self.temp_status = None
 
     def update_status(self, status):
-        self.order_manager.orders[self.order_temp.order_id].status = status
+        self.temp_status = self.order_manager.orders[self.order_temp.order_id].status = status
         self.order_manager.refresh()
         self.state = AdminOrderManagerStates.on_msg_state
         self.reply_msg = "הכנס סיבה:"
         return Status.wait
 
     def on_msg_for_updated_order_status(self, message, bot):
-        status = self.order_manager.orders[self.order_temp.order_id].status
+        status = self.temp_status
         print(f"[LOG CRITICAL] status is {status}")
         self.order_manager.notification_order(bot.bot, status, message)
         self.reply_msg = "תודה"
@@ -107,7 +113,8 @@ class AdminOrderManager(MenuProtocol):
 
     def handle(self, bot, message, sender, context) -> str:
 
-        if message in self.actions and self.state != AdminOrderManagerStates.change_order:
+        if message in self.actions and self.state != AdminOrderManagerStates.change_order and \
+                self.state != AdminOrderManagerStates.on_msg_state:
             self.state = self.actions[message]
             if message == Status.back_to_main_menu:
                 return self.actions[message]

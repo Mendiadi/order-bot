@@ -29,14 +29,14 @@ admin = "5784227740"
 class OrderSchema:
     client_name: str
     client_id: str
-    product_name: str
+    products: list
     amount: str
     phone: str
     address: Address
 
     def prepare_saving(self):
         return {
-            "product_name": self.product_name,
+            "product_name": self.products,
             "amount": self.amount,
             "phone": self.phone,
             "address": self.address.__dict__
@@ -58,7 +58,7 @@ class OrderDetailsProtocol:
     date: str
     admin_id: str
     admin_username: str
-    product_name: str
+    products: list
     amount_of_product: str
     phone_number: str
     city: str
@@ -82,7 +82,7 @@ class OrderManager:
             elif order.status == OrderStatus.canceled:
                 self.cancelled_orders.append(order)
 
-        self.orders = dict(filter(lambda order: order[1] != OrderStatus.pending, self.orders.items()))
+        self.orders = dict(filter(lambda order: order[1] == OrderStatus.pending, self.orders.items()))
 
         print(self.orders)
         print(self.approved_orders)
@@ -99,7 +99,7 @@ class OrderManager:
 
         bot.send_message(admin,
                          f" date: {order.date}\nid: {order.order_id}\nusername:  @{order.client_username} \n userid: {order.client_id}\n"
-                         f"product: {order.product_name}\n amount: {order.amount_of_product}\n"
+                         f"product: {order.products}\n amount: {order.amount_of_product}\n"
                          f"phone:{order.phone_number}\naddress:{order.street} {order.home_number} {order.city},\n note for manager/driver: {order.notes}")
         self.approved_orders.clear()
 
@@ -108,7 +108,7 @@ class OrderManager:
             generate_id_order(self.orders), OrderStatus.pending, order.client_name,
             order.client_id, get_time(),
 
-            "some user", "some user", order.product_name, order.amount, order.phone,
+            "some user", "some user", order.products, str(len(order.products)), order.phone,
             order.address.city, order.address.street, order.address.number, notes
         )
         self.orders[new_order.order_id] = new_order

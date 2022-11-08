@@ -52,6 +52,7 @@ class App:
 
     def client(self, update, context):
         uid = update.message.from_user.id
+
         if uid not in self.clients:
             app = MainBot(self.stock)
             self.clients[uid] = app

@@ -12,21 +12,21 @@ class MainMenu(MenuProtocol):
         "#": MenuState.main
     }
 
-    def __init__(self,stock):
+    def __init__(self, stock):
         super().__init__(stock)
         self.msg_stage = main_stage_msg
 
     def show(self) -> str:
         return self.msg_stage
 
-    def handle(self, bot, message, sender,context):
+    def handle(self, bot, message, sender, context):
         if message == "2":
             if len(self.stock.products) == 0:
                 bot.reply_text("אין מוצרים זמינים")
                 return MenuState.main
-        rep = super(MainMenu, self).handle(bot, message, sender,context)
+        rep = super(MainMenu, self).handle(bot, message, sender, context)
         if rep == Status.error:
-            bot.reply_text( ERROR_MSG)
+            bot.reply_text(ERROR_MSG)
             return rep
         elif rep == Status.stock:
             stock = self.stock.get_stock()

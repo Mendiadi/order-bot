@@ -10,6 +10,7 @@ class OrderStates:
     phone_state = 3
     address_state = 4
     note_state = 5
+    add_product = 6
 
 
 class OrderMenu(MenuProtocol):
@@ -19,6 +20,7 @@ class OrderMenu(MenuProtocol):
         self.msg_stage: str = order_menu_stage_msg
         self.state = None
         self.stack = None
+
         self.cart = []
         self.reply_msg = ""
         self.state_callables = {
@@ -26,7 +28,8 @@ class OrderMenu(MenuProtocol):
             OrderStates.amount_state: self.on_amount,
             OrderStates.phone_state: self.on_phone,
             OrderStates.address_state: self.on_address,
-            OrderStates.note_state: self.on_notes
+            OrderStates.note_state: self.on_notes,
+            OrderStates.add_product:self.on_add_product_again
         }
         self.order = OrderSchema(None, None, "", "", "", None)
         print(f"[LOG] state list -  {self.stack}")
@@ -38,15 +41,27 @@ class OrderMenu(MenuProtocol):
         self.stack = [OrderStates.note_state,
                       OrderStates.address_state,
                       OrderStates.phone_state,
+                        OrderStates.add_product,
                       OrderStates.amount_state,
                       OrderStates.product_state
 
                       ]
-        self.cart = []
+
 
     def show(self):
 
         return self.msg_stage + f"\n {self.stock.get_stock()}" + "הכנס שם מוצר:"
+
+    def on_add_product_again(self,message,bot):
+
+        if message == "1":
+            self.on_exit()
+        elif message == "2":
+            self.reply_msg = "הכנס פאלפון:"
+            return Status.wait
+        else:
+            return Status.error
+
 
     def on_phone(self, message, bot):
         self.order.phone = message
@@ -55,22 +70,25 @@ class OrderMenu(MenuProtocol):
         return Status.wait
 
     def on_amount(self, message, bot):
-        if int(self.cart[0].ammount) < int(message):
+        if int(self.cart[len(self.cart)-1].ammount) < int(message):
             self.reply_msg = "הכנס כמות שוב:"
             self.stack.append(self.state)
             bot.reply_text("אין מספיק במלאי ")
         else:
             self.order.amount = message
-            self.cart[0] = (self.cart[0], message)
+            self.cart[-1].ammount = message
             self.reply_msg = f"בחרת להוסיף  {message}"
-            self.reply_msg = "הכנס פאלפון:"
+
+        bot.reply_text("רוצה לבחור מוצר נוסף? 1. כן 2. לא")
         return Status.wait
 
     def on_notes(self, message, bot):
+        self.order.products = self.cart
         order_ready = self.order_manager.create_order(self.order, message)
         self.order_manager.order_notification(bot.bot, order_ready)
+        bot.reply_text(f"{self.order.prepare_saving()}")
         self.reply_msg = "ההזמנה נקלטה! מועבר לתפריט ראשי."
-        self.on_exit()
+        self.cart = []
         return MenuState.main
 
     def on_address(self, message, bot):
@@ -78,7 +96,7 @@ class OrderMenu(MenuProtocol):
             self.order.address = Address(*message.split(" "))
         except TypeError:
             self.order.address = Address(message, "", "")
-        bot.reply_text(f"{self.order.prepare_saving()}")
+
         self.reply_msg = "זה הזמן לרשום הערה למנהל אם יש."
         return Status.wait
 
@@ -87,7 +105,7 @@ class OrderMenu(MenuProtocol):
         if product:
             self.reply_msg = f" נוסף לעגלה{message}"
             self.cart.append(product)
-            self.order.product_name = message
+
             self.reply_msg = "הכנס כמות"
 
         else:
