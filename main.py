@@ -12,6 +12,8 @@ from enums_schemas import MenuState, Status
 from product_item import Stock
 
 
+
+
 class MainBot:
 
     def __init__(self, stock):
@@ -28,6 +30,7 @@ class MainBot:
         self.menu_state = MenuState.main
         self.menu = self.MENUS[self.menu_state]
 
+
     def updater(self, state):
         if state in self.MENUS:
             self.menu_state = state
@@ -42,7 +45,8 @@ class MainBot:
         if state != Status.wait:
             update.message.reply_text(self.menu.show())
 
-
+def help_command(update,context):
+    return update.message.reply_text("בוט זה מאפשר לך לבצע הזמנות ולנהל אותן, עקוב אחר ההוראות בכל תפריט ואם ראית באג דווח, שימוש מהנה")
 
 class App:
     def __init__(self, updater: Updater):
@@ -63,6 +67,7 @@ class App:
     def main_loop(self):
         dp: Dispatcher = self.updater.dispatcher
         self.stock.load()
+        dp.add_handler(CommandHandler("help", help_command))
         dp.add_handler(MessageHandler(Filters.text, self.client))
 
         self.updater.start_polling()

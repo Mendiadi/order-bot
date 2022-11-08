@@ -44,7 +44,7 @@ class AdminOrderManager(MenuProtocol):
         if not orders:
             self.reply_msg = f"אין הזמנות ממתינות"
         else:
-            self.reply_msg = f"{orders}"
+            self.reply_msg = f"{[f'orders: id: {order.order_id} products: {order.products} phone: {order.phone_number} address: {order.street}'for _, order in orders]}"
         self.on_exit()
         return MenuState.order_manage
 
@@ -58,9 +58,13 @@ class AdminOrderManager(MenuProtocol):
             self.reply_msg = "מספר הזמנה לא חוקי"
             self.state = AdminOrderManagerStates.choose_order
         return Status.wait
-
+#todo fix the bug when you add product again and the amount is less then stock amount
     def on_choose_order(self, message, bot):
+        if not len(self.order_manager.orders):
+            self.reply_msg = f"אין הזמנות ממתינות"
+            return MenuState.stock_manager
         bot.reply_text("הכנס מספר הזמנה:\n")
+
         self.state = AdminOrderManagerStates.on_enter_order
         return Status.wait
 
@@ -125,7 +129,7 @@ class AdminOrderManager(MenuProtocol):
         except (TypeError, ValueError):
 
             bot.reply_text("שגיאה קרתה מצטער..")
-            return MenuState.main
+            return MenuState.order_manage
         state = self.state_callable[int(self.state)](message, bot)
         bot.reply_text(self.reply_msg)
         return state
