@@ -24,7 +24,7 @@ class Stock:
     def __init__(self, path: str):
         self.out_put_file = path
         self.stock = None
-        self.products = None
+        self.products = []
 
     def load(self):
         if self.out_put_file in os.listdir():

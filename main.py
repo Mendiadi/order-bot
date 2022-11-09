@@ -12,8 +12,6 @@ from enums_schemas import MenuState, Status
 from product_item import Stock
 
 
-
-
 class MainBot:
 
     def __init__(self, stock):
@@ -25,11 +23,10 @@ class MainBot:
             MenuState.stock_manager: StockManager(stock),
             MenuState.stock_editor: StockEditor(stock),
             MenuState.order_menu: OrderMenu(stock),
-            MenuState.order_manage:AdminOrderManager(stock)
+            MenuState.order_manage: AdminOrderManager(stock)
         }
         self.menu_state = MenuState.main
         self.menu = self.MENUS[self.menu_state]
-
 
     def updater(self, state):
         if state in self.MENUS:
@@ -45,8 +42,11 @@ class MainBot:
         if state != Status.wait:
             update.message.reply_text(self.menu.show())
 
-def help_command(update,context):
-    return update.message.reply_text("בוט זה מאפשר לך לבצע הזמנות ולנהל אותן, עקוב אחר ההוראות בכל תפריט ואם ראית באג דווח, שימוש מהנה")
+
+def help_command(update, context):
+    return update.message.reply_text(
+        "בוט זה מאפשר לך לבצע הזמנות ולנהל אותן, עקוב אחר ההוראות בכל תפריט ואם ראית באג דווח, שימוש מהנה")
+
 
 class App:
     def __init__(self, updater: Updater):
@@ -64,7 +64,7 @@ class App:
                                        args=(update, context))
         thread_conv.start()
 
-    def main_loop(self):
+    def listen(self):
         dp: Dispatcher = self.updater.dispatcher
         self.stock.load()
         dp.add_handler(CommandHandler("help", help_command))
@@ -77,7 +77,7 @@ class App:
 def main():
     api_key = "5743628298:AAH6gmGWyO4jGOr0vFxrlcMX8zic79_GCrc"
     app = App(Updater(api_key, use_context=True))
-    app.main_loop()
+    app.listen()
 
 
 if __name__ == '__main__':
