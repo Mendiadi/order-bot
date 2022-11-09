@@ -69,7 +69,7 @@ class MainBot(Bot):
             MenuState.stock_editor: StockEditor(stock),
             MenuState.order_menu: OrderMenu(stock),
             MenuState.order_manage: AdminOrderManager(stock),
-            MenuState.verify_manage:VerifyManagerMenu(stock,app.waiting_for_approved)
+            MenuState.verify_manage:VerifyManagerMenu(stock,app)
         }
         self.menu_state = MenuState.main
         self.menu = self.MENUS[self.menu_state]
