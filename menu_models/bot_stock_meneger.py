@@ -9,6 +9,7 @@ class StockManager(MenuProtocol):
         "2": MenuState.delete_menu,
         "3": Status.stock,
         "4":MenuState.order_manage,
+        "5":MenuState.verify_manage,
         Status.back_to_main_menu: MenuState.main
 
     }

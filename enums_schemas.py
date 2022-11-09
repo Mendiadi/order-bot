@@ -1,6 +1,7 @@
 
 
 class Status:
+    verify = "v_r"
     init = "init"
     make_order = "order"
     error = "error"
@@ -11,6 +12,9 @@ class Status:
 
 
 class MenuState:
+    verify_manage = "v_m_m"
+    demo = "d_m"
+    verify = "v_m"
     main = "m"
     stock_manager = "s_m"
     stock_editor = "s_e"
