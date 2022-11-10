@@ -8,7 +8,7 @@ class VerifyManagerMenu(MenuProtocol):
         self.app = app
 
         self.state = 0
-        self.reply_msg =  " \nהכנס מספר משתמש "+ str(app.waiting_for_approved)
+        self.reply_msg =  " \nהכנס מספר משתמש "+ str(self.app.waiting_for_approved)
         self.user_id_temp = None
 
     def show(self):
@@ -30,6 +30,7 @@ class VerifyManagerMenu(MenuProtocol):
              if message == "1":
                  self.app.clients[int(self.user_id_temp)].is_verify = True
                  bot.reply_text("עודכן")
+                 # self.app.waiting_for_approved.remove()
                  self.app.update_verify_clients()
                  return MenuState.stock_manager
 

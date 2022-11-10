@@ -61,6 +61,7 @@ class DemoBot(Bot):
 class MainBot(Bot):
 
     def __init__(self, stock,app):
+        self.app = app
         self.MENUS = {
             MenuState.main: MainMenu(stock),
             MenuState.login_menu: LoginMenu(stock),
@@ -69,7 +70,7 @@ class MainBot(Bot):
             MenuState.stock_editor: StockEditor(stock),
             MenuState.order_menu: OrderMenu(stock),
             MenuState.order_manage: AdminOrderManager(stock),
-            MenuState.verify_manage:VerifyManagerMenu(stock,app)
+            MenuState.verify_manage:VerifyManagerMenu(stock,self.app)
         }
         self.menu_state = MenuState.main
         self.menu = self.MENUS[self.menu_state]
@@ -118,7 +119,7 @@ class App:
         json_func.write_to_json(data,self.approved_json_path,len(self.verify_clients))
 
     def client(self, update, context):
-        print("client: ",self.clients,"approved: ", self.verify_clients)
+        print("[LOGLOGLOG]",self.waiting_for_approved)
         print( update.message.from_user.id)
         uid = update.message.from_user.id
         client = self.clients.get(uid,None)
