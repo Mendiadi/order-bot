@@ -13,12 +13,16 @@ class OrderStates:
     address_state = 4
     note_state = 5
     add_product = 6
+    cancel_order = Status.back_to_main_menu
+
 
 
 class OrderMenu(MenuProtocol):
 
     def __init__(self, stock, app,me):
         super(OrderMenu, self).__init__(stock)
+        self.order_manager = get_order_system()
+
         self.msg_stage: str = order_menu_stage_msg
         self.state = None
         self.stack = None
@@ -30,7 +34,8 @@ class OrderMenu(MenuProtocol):
             OrderStates.phone_state: self.on_phone,
             OrderStates.address_state: self.on_address,
             OrderStates.note_state: self.on_notes,
-            OrderStates.add_product: self.on_add_product_again
+            OrderStates.add_product: self.on_add_product_again,
+
         }
         self.me = me
         self.app = app
@@ -41,8 +46,9 @@ class OrderMenu(MenuProtocol):
         self.order = OrderSchema(None, None, "", "", "", None)
         print(f"[LOG] state list -  {self.stack}")
         # todo constant message for each msg in state!!!!
-        self.order_manager = get_order_system()
+
         self.on_exit()
+
 
 
 
@@ -122,6 +128,10 @@ class OrderMenu(MenuProtocol):
         return Status.wait
 
     def on_product(self, message, bot):
+        if not self.order_manager.active:
+            bot.reply_text("אין אפשרות להזמין כרגע.")
+            self.on_restart()
+            return MenuState.main
         if not self.me.time_process_start:
             self.me.in_process = True
             self.me.time_process_start = datetime.datetime.now()
@@ -139,7 +149,9 @@ class OrderMenu(MenuProtocol):
         return Status.wait
 
     def handle(self, bot, message, sender, context) -> str:
-
+        if message == OrderStates.cancel_order:
+            self.on_restart()
+            return MenuState.main
         if self.stack:
             self.state = self.stack.pop()
         print(f"[LOG] state -  {self.state}")

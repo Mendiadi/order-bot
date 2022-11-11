@@ -14,7 +14,7 @@ class LoginMenu(MenuProtocol):
         if message == self.secret_key:
             bot.bot.delete_message(bot.chat_id,bot.message_id)
             bot.reply_text("התחברות בוצעה בהצלחה")
-            return MenuState.stock_manager
+            return MenuState.admin_man
         elif message == Status.back_to_main_menu:
             return MenuState.main
         else:

@@ -17,7 +17,7 @@ from menu_models.bot_order_menu import OrderMenu
 from menu_models.bot_delete_menu import DeleteMenu
 from menu_models.bot_login_menu import LoginMenu
 from menu_models.bot_order_manager_menu import AdminOrderManager
-from menu_models import MainMenu, StockManager, StockEditor, MenuProtocol
+from menu_models import MainMenu, StockEditor, MenuProtocol
 from enums_schemas import MenuState, Status
 from product_item import Stock
 
@@ -30,6 +30,8 @@ class Client:
     time_process_start: datetime.datetime = None
     in_process: bool = False
     killed: bool = False
+    is_admin: bool = False
+    last_show_up: datetime.datetime = None
 
 
 class Bot(metaclass=abc.ABCMeta):
@@ -115,7 +117,7 @@ class ClientBot(MemberBot):
             MenuState.main: MainMenu(stock),
             MenuState.login_menu: LoginMenu(stock),
             MenuState.delete_menu: DeleteMenu(stock),
-            MenuState.stock_manager: StockManager(stock),
+            MenuState.admin_man: AdminMenu(stock, self.app),
             MenuState.stock_editor: StockEditor(stock),
             MenuState.order_menu: OrderMenu(stock, app, me),
             MenuState.order_manage: AdminOrderManager(stock),
@@ -134,15 +136,15 @@ class AdminBot(MemberBot):
     def __init__(self, stock, app, me=None):
         super(AdminBot, self).__init__(stock, app, me)
         self.MENUS = {
-            MenuState.main: AdminMenu(stock),
-            MenuState.delete_menu: DeleteMenu(stock),
-            MenuState.stock_manager: StockManager(stock),
-            MenuState.stock_editor: StockEditor(stock),
-            MenuState.order_menu: OrderMenu(stock, app, me),
-            MenuState.order_manage: AdminOrderManager(stock),
+            MenuState.admin_man: AdminMenu(self.stock, self.app),
+            MenuState.delete_menu: DeleteMenu(self.stock),
+
+            MenuState.stock_editor: StockEditor(self.stock),
+            MenuState.order_menu: OrderMenu(self.stock, self.app, me),
+            MenuState.order_manage: AdminOrderManager(self.stock),
             MenuState.verify_manage: VerifyManagerMenu(self.stock, self.app)
         }
-        self.menu_state = MenuState.main
+        self.menu_state = MenuState.admin_man
         self.menu = self.MENUS[self.menu_state]
 
 
@@ -153,11 +155,12 @@ class App:
         self.updater = updater
         self.verify_clients = {}
         self.waiting_for_approved = []
+        self.admins_members = {}
         self.approved_json_path = "approved_clients.json"
         self.in_process_clients = []
         if self.approved_json_path in os.listdir():
             self.load_verify_clients()
-        self.kill_process_thread = threading.Thread(target=self.standalone_process_provider, daemon=True)
+        self.kill_process_thread = threading.Thread(target=self.standalone_process_provider)
         self.run = False
 
     def load_verify_clients(self):
@@ -175,6 +178,7 @@ class App:
         print("[IN PROCESS CLINETS LOG]", self.in_process_clients)
         print(update.message.from_user.id)
         uid = update.message.from_user.id
+
         client = self.clients.get(uid, None)
         print("client", client)
         if not client:
@@ -185,7 +189,7 @@ class App:
                 self.verify_clients[client.uid] = client
                 client.app = ClientBot(self.stock, self, client)
                 self.update_verify_clients()
-
+        self.clients[uid].last_show_up = datetime.datetime.now()
         thread_conv = threading.Thread(target=self.clients[uid].app.main_handler,
                                        args=(update, context))
         thread_conv.start()
@@ -202,24 +206,56 @@ class App:
         self.updater.idle()
 
     def standalone_process_provider(self):
-        rate = 2
-        while self.run:
-            time.sleep(rate)
 
-            self.kill_client_process()
+        job_rate = 5
+        while True:
+            time.sleep(job_rate)
+            if self.in_process_clients:
+                self.kill_client_process()
+                continue
+            if self.clients:
+                self.clean_client_garbage()
+
+    def broad_cast_message(self, message):
+        for client in self.verify_clients.values():
+            self.updater.bot.send_message(client.uid, message)
+
+    def filter_clients(self, clt, curr_time, max_time):
+
+        if clt.in_process \
+                or not clt.last_show_up \
+                or clt.is_verify \
+                or clt.is_admin \
+                or clt.uid not in self.waiting_for_approved:
+            return True
+        subtract = curr_time - clt.last_show_up
+        if subtract.seconds > max_time:
+            return False
+
+    def clean_client_garbage(self):
+        max_time = 259200
+        curr_time = datetime.datetime.now()
+        self.clients = dict(
+            filter(
+                lambda clt: self.filter_clients(
+                    clt[1], curr_time, max_time), self.clients.items()
+                )
+            )
+
+        print(f"[LOG DELETE] removed  {self.clients}")
 
     def kill_client_process(self):
-        if len(self.in_process_clients) == 0:
-            return
-        # max_time = 1800
-        max_time = 20
+        max_time = 1800
         curr_time = datetime.datetime.now()
         for client in self.in_process_clients:
-            subtract_times = curr_time - client.time_process_start
-            if subtract_times.seconds >= max_time:
-                client.in_process = False
-                client.time_process_start = None
-                client.killed = True
+            if client.time_process_start:
+                subtract_times = curr_time - client.time_process_start
+                if subtract_times.seconds >= max_time:
+                    client.in_process = False
+                    client.time_process_start = None
+                    client.killed = True
+                    self.updater.bot.send_message(client.uid,
+                                                  "נראה שעזבת בזמן תהליך הזמנה, ביטלתי אותה לבינתיים. הכנס כל דבר כדי להמשיך")
         self.in_process_clients = list(filter(lambda client: client.in_process, self.in_process_clients))
 
 

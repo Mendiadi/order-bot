@@ -20,12 +20,12 @@ class StockEditor(MenuProtocol):
 
     def handle(self, bot, message, sender,context):
         if message == Status.back_to_main_menu:
-            return MenuState.stock_manager
+            return MenuState.admin_man
         if self.in_state == StockEditorStates.amount:
             bot.reply_text(self.update_stock(message))
             self.in_state = StockEditorStates.name
             bot.reply_text(self.msg)
-            return MenuState.stock_manager
+            return MenuState.admin_man
         else:
 
 

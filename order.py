@@ -72,6 +72,7 @@ class OrderManager:
         self.orders = {}
         self.approved_orders = []
         self.cancelled_orders = []
+        self.active = True
 
     def refresh(self):
         print(f"[LOG CRITICAL] {self.orders}")

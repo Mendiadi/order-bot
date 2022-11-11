@@ -1,5 +1,5 @@
 from .bot_base_menu import MenuProtocol
-from .bot_stock_meneger import StockManager
+from .bot_admin_menu import AdminMenu
 from order import OrderStatus
 
 from .constant_messages import admin_order_man_stage
@@ -14,13 +14,15 @@ class AdminOrderManagerStates:
     change_order = 4
     on_enter_order = 5
     on_msg_state = 6
+    start_stop_sys = 7
 
 
 class AdminOrderManager(MenuProtocol):
     actions = {
         "1": AdminOrderManagerStates.view_orders,
         "2": AdminOrderManagerStates.choose_order,
-        Status.back_to_main_menu: MenuState.stock_manager
+        "3":AdminOrderManagerStates.start_stop_sys,
+        Status.back_to_main_menu: MenuState.admin_man
     }
 
     def __init__(self, stock):
@@ -32,12 +34,20 @@ class AdminOrderManager(MenuProtocol):
             AdminOrderManagerStates.choose_order: self.on_choose_order,
             AdminOrderManagerStates.change_order: self.on_change_order,
             AdminOrderManagerStates.on_enter_order: self.on_enter_order,
-            AdminOrderManagerStates.on_msg_state: self.on_msg_for_updated_order_status
+            AdminOrderManagerStates.on_msg_state: self.on_msg_for_updated_order_status,
+            AdminOrderManagerStates.start_stop_sys:self.on_start_stop_sys
         }
         self.reply_msg = "חושב"
         self.order_manager = get_order_system()
         self.temp_status = None
         self.on_exit()
+
+    def on_start_stop_sys(self,message,bot):
+        if self.order_manager.active:
+            self.reply_msg = "חסמת את האופציה לשלוח הזמנות. לביטול חסימה בחר 3 שוב"
+        else:
+            self.reply_msg = "אפשרת את האופציה לשלוח הזמנות. לחסימה בחר 3 שוב"
+        self.order_manager.active = not self.order_manager.active
 
     def on_view_orders(self, message, bot):
         orders = self.order_manager.orders.items()
