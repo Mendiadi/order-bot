@@ -15,6 +15,8 @@ class VerifyManagerMenu(MenuProtocol):
         return self.reply_msg
 
     def handle(self, bot, message,sender,context) -> str:
+         if message == Status.back_to_main_menu:
+            return MenuState.stock_manager
          if self.state == 0:
             for username,userid in self.app.waiting_for_approved:
                 if message == str(userid):
@@ -24,8 +26,7 @@ class VerifyManagerMenu(MenuProtocol):
                 self.state = 1
             else:
                 bot.reply_text("הכנס מספר קיים")
-         elif message == Status.back_to_main_menu:
-             return MenuState.stock_manager
+
          elif self.state == 1:
              if message == "1":
                  self.app.clients[int(self.user_id_temp)].is_verify = True

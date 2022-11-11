@@ -58,7 +58,7 @@ class AdminOrderManager(MenuProtocol):
             self.reply_msg = "מספר הזמנה לא חוקי"
             self.state = AdminOrderManagerStates.choose_order
         return Status.wait
-#todo fix the bug when you add product again and the amount is less then stock amount
+
     def on_choose_order(self, message, bot):
         if not len(self.order_manager.orders):
             self.reply_msg = f"אין הזמנות ממתינות"

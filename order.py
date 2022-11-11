@@ -22,7 +22,7 @@ class Address:
     city: str
 
 
-admin = "5784227740"
+admin = "458614153"
 
 
 @dataclasses.dataclass
@@ -87,13 +87,14 @@ class OrderManager:
         print(self.orders)
         print(self.approved_orders)
 
-    def notification_order(self, bot, status,reason):
+    async def notification_order(self, bot, status,reason):
         if status == OrderStatus.approved:
             for order in self.approved_orders:
                 bot.send_message(order.client_id, f" {reason} {order.order_id}" + "ההזמנה שלך אושרה לפרטים מספר הזמנה הוא:")
         else:
             for order in self.cancelled_orders:
                 bot.send_message(order.client_id, f"{reason} {order.order_id}" + "ההזמנה שלך בוטלה")
+
 
     def order_notification(self, bot, order: OrderDetailsProtocol):
 

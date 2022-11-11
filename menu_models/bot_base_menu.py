@@ -9,6 +9,7 @@ class MenuProtocol:
         self.stock: Stock = stock
         self.msg_stage: str = ""
 
+    def show(self):...
 
     def handle(self, bot, message,sender,context) -> str:
 

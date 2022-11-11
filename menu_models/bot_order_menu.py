@@ -1,3 +1,5 @@
+import datetime
+
 from menu_models import MenuProtocol
 from enums_schemas import Status, MenuState
 from menu_models.constant_messages import *
@@ -15,7 +17,7 @@ class OrderStates:
 
 class OrderMenu(MenuProtocol):
 
-    def __init__(self, stock):
+    def __init__(self, stock, app,me):
         super(OrderMenu, self).__init__(stock)
         self.msg_stage: str = order_menu_stage_msg
         self.state = None
@@ -30,13 +32,22 @@ class OrderMenu(MenuProtocol):
             OrderStates.note_state: self.on_notes,
             OrderStates.add_product: self.on_add_product_again
         }
+        self.me = me
+        self.app = app
+
+
+
+
         self.order = OrderSchema(None, None, "", "", "", None)
         print(f"[LOG] state list -  {self.stack}")
         # todo constant message for each msg in state!!!!
         self.order_manager = get_order_system()
         self.on_exit()
 
+
+
     def on_exit(self):
+        print("on exit")
         self.stack = [OrderStates.note_state,
                       OrderStates.address_state,
                       OrderStates.phone_state,
@@ -46,6 +57,7 @@ class OrderMenu(MenuProtocol):
 
                       ]
         self.reply_msg = ""
+
 
     def show(self):
         return self.msg_stage + f"\n {self.stock.get_stock()}" + "הכנס שם מוצר:"
@@ -89,7 +101,16 @@ class OrderMenu(MenuProtocol):
         bot.reply_text(f"{self.order.prepare_saving()}")
         self.reply_msg = "ההזמנה נקלטה! מועבר לתפריט ראשי."
         self.cart = []
+        self.on_restart()
         return MenuState.main
+
+    def on_restart(self):
+        self.on_exit()
+        print("on restart")
+        self.me.in_process = False
+        self.me.time_process_start = None
+
+        self.cart = []
 
     def on_address(self, message, bot):
         try:
@@ -101,6 +122,10 @@ class OrderMenu(MenuProtocol):
         return Status.wait
 
     def on_product(self, message, bot):
+        if not self.me.time_process_start:
+            self.me.in_process = True
+            self.me.time_process_start = datetime.datetime.now()
+            self.app.in_process_clients.append(self.me)
         product = self.stock.get_product(message)
         if product:
             self.reply_msg = f" נוסף לעגלה{message}"
