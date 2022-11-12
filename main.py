@@ -4,6 +4,7 @@ import datetime
 import os
 import threading
 import time
+import sys
 
 from telegram.ext import *
 from telegram import *
@@ -266,4 +267,7 @@ def main():
 
 
 if __name__ == '__main__':
+    # from tests import start_testing
+    # start_testing()
+
     main()

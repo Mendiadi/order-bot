@@ -3,8 +3,12 @@ import os
 import pytest
 
 import json_func
+from main import App, Client
 from menu_models import LoginMenu
 from menu_models.bot_delete_menu import DeleteMenu
+from menu_models.bot_demo_menu import DemoMenu
+from menu_models.bot_order_menu import OrderMenu
+from order import OrderManager
 from product_item import Stock,Product
 from menu_models.bot_main_menu import MainMenu
 
@@ -63,4 +67,23 @@ def login_menu_instant(stock_instant) -> LoginMenu:
 @pytest.fixture
 def delete_menu_instant(stock_instant) -> DeleteMenu:
     menu = DeleteMenu(stock_instant)
+    return menu
+
+@pytest.fixture
+def demo_menu_instant(stock_instant) -> DemoMenu:
+    menu = DemoMenu(stock_instant)
+    return menu
+
+@pytest.fixture
+def order_manager_instant() -> OrderManager:
+    order_man = OrderManager()
+    return order_man
+
+@pytest.fixture
+def app_instant():
+    return App(None)
+
+@pytest.fixture
+def order_menu_instant(stock_instant,app_instant) -> OrderMenu:
+    menu = OrderMenu(stock_instant,app_instant,None)
     return menu
