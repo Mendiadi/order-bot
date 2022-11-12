@@ -49,7 +49,7 @@ def create_virtual_stock():
         os.remove("test_env.json")
 
 
-@pytest.fixture()
+@pytest.fixture
 def stock_instant() -> Stock:
     stock = Stock("test_env.json")
     return stock

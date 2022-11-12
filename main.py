@@ -267,7 +267,7 @@ def main():
 
 
 if __name__ == '__main__':
-    # from tests import start_testing
-    # start_testing()
+    from tests import start_testing
+    start_testing()
 
-    main()
+    # main()
