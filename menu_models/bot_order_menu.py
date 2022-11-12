@@ -93,7 +93,7 @@ class OrderMenu(MenuProtocol):
             bot.reply_text("אין מספיק במלאי ")
 
         else:
-            self.order.amount = message
+            self.order.amount = str(len(self.cart))
             self.cart[-1].ammount = message
             self.reply_msg = "רוצה לבחור מוצר נוסף? 1. כן 2. לא"
             bot.reply_text(f"בחרת להוסיף  {message}")

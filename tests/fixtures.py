@@ -18,6 +18,8 @@ class VirtualBotEnv:
     def delete_message(self, msg, id_):
         self.message_chat_id = msg, id_
 
+    def send_message(self,admin,order):...
+
 class VirtualBotForTestEnv:
 
     def __init__(self):
