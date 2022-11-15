@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 from json_func import json_read, write_to_json
-
+import requests
 
 @dataclass
 class Product():
@@ -35,37 +35,34 @@ class Stock:
             self.stock = json_read(self.out_put_file)
 
     def get_product(self, name):
-        for item in self.products:
-            if item.name == name:
-                return item
+        product = requests.get(f"http://127.0.0.1:5000/product/{name}")
+        if product.ok:
+            return Product(name=product.json()['name'],ammount=product.json()['amount'])
         return None
 
     def get_stock(self):
-        if self.products:
-            tmp_stock = ""
-            for index, value in enumerate(self.products):
-                tmp_stock += f"{index + 1}) {value.name} \n"
-            return tmp_stock
+        res = requests.get("http://127.0.0.1:5000/product")
+        for p in res.json():
 
+            self.products.append(Product(name=p['name'],ammount=p['amount']))
+        return {"Stock":res.json()}
     def get_stock_admin(self):
-        tmp_stock = "מצב מלאי :\n"
-        for index, value in enumerate(self.products):
-            tmp_stock += f"{index + 1}) {value}"
-        tmp_stock += f"."
-        return tmp_stock
+        res = requests.get("http://127.0.0.1:5000/product")
+
+        for p in res.json():
+            self.products.append(Product(name=p['name'], ammount=p['amount']))
+        return {"Stock": res.json()}
 
     def add_product(self, pdt):
-        self.products.append(pdt)
+        requests.post("http://127.0.0.1:5000/product",json={"name":pdt.name,"amount":pdt.ammount})
+
+
 
     def remove_product(self, name) -> bool:
-        item = self.get_product(name)
-        if item:
-            self.products.remove(item)
-            self.commit()
+        res = requests.delete(f"http://127.0.0.1:5000/product/{name}")
+        if res.ok:
             return True
-        else:
-            return False
-
+        return  False
     def commit(self):
         self.stock["Stock"] = [p.save_ready() for p in self.products]
         write_to_json(self.stock, self.out_put_file, len(self.stock))

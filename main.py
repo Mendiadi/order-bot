@@ -214,8 +214,8 @@ class App:
             if self.in_process_clients:
                 self.kill_client_process()
                 continue
-            if self.clients:
-                self.clean_client_garbage()
+            #if self.clients:
+                #self.clean_client_garbage()
 
     def broad_cast_message(self, message):
         for client in self.verify_clients.values():
@@ -267,7 +267,7 @@ def main():
 
 
 if __name__ == '__main__':
-    from tests import start_testing
-    start_testing()
+    # from tests import start_testing
+    # start_testing()
 
-    # main()
+    main()

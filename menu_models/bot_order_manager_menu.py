@@ -72,7 +72,7 @@ class AdminOrderManager(MenuProtocol):
     def on_choose_order(self, message, bot):
         if not len(self.order_manager.orders):
             self.reply_msg = f"אין הזמנות ממתינות"
-            return MenuState.stock_manager
+            return MenuState.admin_man
         bot.reply_text("הכנס מספר הזמנה:\n")
 
         self.state = AdminOrderManagerStates.on_enter_order
@@ -123,7 +123,7 @@ class AdminOrderManager(MenuProtocol):
             self.reply_msg = "הזמנה לא נמצאה"
             self.state = None
 
-            return MenuState.stock_manager
+            return MenuState.admin_man
 
     def handle(self, bot, message, sender, context) -> str:
 

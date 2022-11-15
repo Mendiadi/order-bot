@@ -33,11 +33,10 @@ def test_load_first_file(stock_instant):
 
 
 def test_get_product(stock_instant,create_virtual_stock):
-    stock_instant.load()
-    a =stock_instant.get_product("test2")
+    a =stock_instant.get_product("shay")
     b = stock_instant.get_product("avi")
     assert b is None
-    assert a.name == "test2" and a.ammount == 1
+    assert a.name == "shay" and a.ammount == 0
 
 def test_add_product(stock_instant):
 

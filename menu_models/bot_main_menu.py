@@ -32,6 +32,7 @@ class MainMenu(MenuProtocol):
         elif rep == Status.stock:
             stock = self.stock.get_stock()
             if stock:
+                print(stock)
                 bot.reply_text(stock)
 
 
