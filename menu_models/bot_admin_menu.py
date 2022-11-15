@@ -34,8 +34,13 @@ class AdminMenu(MenuProtocol):
             return MenuState.admin_man
         rep = super(AdminMenu, self).handle(bot, message, sender, context)
         if rep == Status.stock:
-            print(f"stock = {self.stock.get_stock_admin()}")
-            bot.reply_text(self.stock.get_stock_admin())
+            stock = self.stock.get_stock_admin()
+            if stock:
+                a = ""
+                for s in stock:
+                    a += "\n" + s
+                bot.reply_text(a + '\n.')
+
         if rep == Status.broadcast:
             bot.reply_text("מה לרשום לכולם? ")
             self.wait_for_broadcast = True

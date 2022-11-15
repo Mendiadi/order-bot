@@ -1,3 +1,4 @@
+import json
 import os
 from dataclasses import dataclass
 from json_func import json_read, write_to_json
@@ -9,9 +10,11 @@ class Product():
     ammount: int
 
     def __str__(self):
-        return f"מוצר: {self.name} " \
-               f"\n" \
-               f"    כמות: {self.ammount} \n"
+        return f"""מוצר: {self.name}    כמות:{self.ammount}
+        """
+
+    def __repr__(self):
+        return str(self)
 
     def save_ready(self):
         return {
@@ -27,12 +30,7 @@ class Stock:
         self.products = []
 
     def load(self):
-        if self.out_put_file in os.listdir():
-            self.stock = json_read(self.out_put_file)
-            self.products = [Product(**p) for p in self.stock["Stock"]]
-        else:
-            write_to_json({"Stock":[]},self.out_put_file,1)
-            self.stock = json_read(self.out_put_file)
+        ...
 
     def get_product(self, name):
         product = requests.get(f"http://127.0.0.1:5000/product/{name}")
@@ -45,18 +43,20 @@ class Stock:
         for p in res.json():
 
             self.products.append(Product(name=p['name'],ammount=p['amount']))
-        return {"Stock":res.json()}
+        return [str(i.name) for i in self.products]
+
+
     def get_stock_admin(self):
         res = requests.get("http://127.0.0.1:5000/product")
-
         for p in res.json():
             self.products.append(Product(name=p['name'], ammount=p['amount']))
-        return {"Stock": res.json()}
+        return [str(i) for i in self.products]
 
     def add_product(self, pdt):
         requests.post("http://127.0.0.1:5000/product",json={"name":pdt.name,"amount":pdt.ammount})
 
-
+    def update(self,pdt):
+        requests.put(f"http://127.0.0.1:5000/product/{pdt.name}",json={"name":pdt.name,"amount":pdt.ammount})
 
     def remove_product(self, name) -> bool:
         res = requests.delete(f"http://127.0.0.1:5000/product/{name}")
@@ -64,10 +64,7 @@ class Stock:
             return True
         return  False
     def commit(self):
-        self.stock["Stock"] = [p.save_ready() for p in self.products]
-        write_to_json(self.stock, self.out_put_file, len(self.stock))
-        print("[DB] commited.")
-        print(f"[DB] {self.products}")
+       ...
 
 
 if __name__ == '__main__':

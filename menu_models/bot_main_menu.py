@@ -1,3 +1,5 @@
+import json
+
 from menu_models import MenuProtocol
 from enums_schemas import MenuState, Status
 from .constant_messages import *
@@ -32,8 +34,10 @@ class MainMenu(MenuProtocol):
         elif rep == Status.stock:
             stock = self.stock.get_stock()
             if stock:
-                print(stock)
-                bot.reply_text(stock)
+                a = ""
+                for s in stock:
+                    a +=  "\n" + s
+                bot.reply_text(a + '\n.')
 
 
         else:

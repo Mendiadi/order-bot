@@ -11,7 +11,8 @@ app.permanent_session_lifetime = timedelta(minutes=5)
 db = SQLAlchemy(app)
 
 class Schemas:
-    ...
+    def to_json(self):
+        return {k:v for k, v in self.__dict__.items()}
 
 class CreateOrder(Schemas):
     def __init__(self,status):
@@ -144,14 +145,14 @@ def get_order(order_id):
 
     order_found = orders.query.filter_by(order_id=order_id).first()
     if order_found:
-        return {"order_id":order_found.order_id,"status":order_found.status}
+        return OrderView(order_found.order_id,order_found.status).to_json()
     else: return Error("order not found", 404).pack()
 
 
 @app.route("/order",methods=['POST'])
 def post_order():
-
-    new_order = orders(request.json['status'])
+    order_created = CreateOrder(request.json['status'])
+    new_order = orders(**order_created.to_json())
     db.session.add(new_order)
     db.session.commit()
     return {"order_id":new_order.order_id,"status":new_order.status}, 201

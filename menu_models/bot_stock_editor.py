@@ -42,14 +42,8 @@ class StockEditor(MenuProtocol):
         return self.msg_stage
 
     def update_stock(self, amount):
-        product = self.stock.get_product(self.temp_product)
-        if product:
-            if amount.isdigit():
-                product.ammount = amount
+        self.stock.update(Product(self.temp_product, amount))
 
-        else:
-            self.stock.add_product(Product(self.temp_product, amount))
-        self.stock.commit()
         return (f"*הוסף / עודכן*"
                 f"{self.temp_product}מוצר: "
                 f"{amount}בכמות: ")
