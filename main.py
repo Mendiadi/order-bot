@@ -23,20 +23,8 @@ from enums_schemas import MenuState, Status
 from product_item import Stock
 
 
-@dataclasses.dataclass
-class Client:
-    uid: str
-    app: Bot
-    is_verify: bool
-    time_process_start: datetime.datetime = None
-    in_process: bool = False
-    killed: bool = False
-    is_admin: bool = False
-    last_show_up: datetime.datetime = None
-
-
-class Bot(metaclass=abc.ABCMeta):
-    def __init__(self, stock, app, me: Client = None):
+class BaseBot(metaclass=abc.ABCMeta):
+    def __init__(self, stock, app, me= None):
         self.this_user = me
         self.stock = stock
         self.app = app
@@ -45,7 +33,19 @@ class Bot(metaclass=abc.ABCMeta):
     def main_handler(self, update: Update, context): ...
 
 
-class DemoBot(Bot):
+@dataclasses.dataclass
+class Client:
+    uid: str
+    app: BaseBot
+    is_verify: bool
+    time_process_start: datetime.datetime = None
+    in_process: bool = False
+    killed: bool = False
+    is_admin: bool = False
+    last_show_up: datetime.datetime = None
+
+
+class DemoBot(BaseBot):
     def __init__(self, stock, app, me: Client = None):
         super(DemoBot, self).__init__(stock, app, me)
         self.MENUS = {
@@ -73,7 +73,7 @@ class DemoBot(Bot):
             update.message.reply_text(self.menu.show())
 
 
-class MemberBot(Bot):
+class MemberBot(BaseBot):
 
     def __init__(self, stock, app, me: Client = None):
         super(MemberBot, self).__init__(stock, app, me)
@@ -214,8 +214,8 @@ class App:
             if self.in_process_clients:
                 self.kill_client_process()
                 continue
-            #if self.clients:
-                #self.clean_client_garbage()
+            # if self.clients:
+            # self.clean_client_garbage()
 
     def broad_cast_message(self, message):
         for client in self.verify_clients.values():
@@ -240,8 +240,8 @@ class App:
             filter(
                 lambda clt: self.filter_clients(
                     clt[1], curr_time, max_time), self.clients.items()
-                )
             )
+        )
 
         print(f"[LOG DELETE] removed  {self.clients}")
 
