@@ -261,7 +261,7 @@ class App:
 
 
 def main():
-    api_key = "5743628298:AAH6gmGWyO4jGOr0vFxrlcMX8zic79_GCrc"
+    api_key = ""
     app = App(Updater(api_key, use_context=True))
     app.listen()
 
